@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Payroll</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            color: #2c3e50;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #2ecc71; /* Green Background */
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #27ae60; /* Darker Green */
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            background-color: #ffffff;
+            overflow-y: auto;
+        }
+
+        .content section {
+            margin-bottom: 40px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content section h3 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #2c3e50;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table thead {
+            background-color: #ecf0f1;
+        }
+
+        table thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #ddd;
+        }
+
+        table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Input Form Styling */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-container input,
+        .form-container button {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-container button {
+            background-color: #27ae60;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background-color: #2ecc71;
+        }
+
+        /* Attendance Status Styling */
+        .attendance-status {
+            display: flex;
+            gap: 10px;
+        }
+
+        .attendance-status button {
+            padding: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .attendance-status .present {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .attendance-status .absent {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .attendance-status .present:hover {
+            background-color: #2ecc71;
+        }
+
+        .attendance-status .absent:hover {
+            background-color: #c0392b;
+        }
+
+        /* Clear Button Styling */
+        .clear-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .clear-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="Admin dashboard.html">Register Student</a></li>
+                <li><a href="Admin(Register teacher).html">Register Teacher</a></li>
+                <li><a href="TimeTable.html">Time Table</a></li>
+                <li><a href="Admin manage payment.html">Manage Payment</a></li>
+                <li><a href="Admin(Manage Attendance).html">Manage Attendance</a></li>
+                <li><a href="Admin managepayroll.html">Manage Payroll</a></li>
+                <li><a href="Admin financial report.html">Financial Report</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <section id="teacher-payroll">
+                <h3>Teacher Payroll</h3>
+                <h3>Teacher Salary Details</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Teacher Name</th>
+                            <th>Total Classes</th>
+                            <th>Classes Attended</th>
+                            <th>Total Pay (RM)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payroll-table-body">
+                        <!-- Data will be inserted here via JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Payment History Section -->
+            <section id="payment-history">
+                <h3>Payment History</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Teacher Name</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payment-history-table">
+                        <!-- Data will be inserted here via JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Constants
+        const PAY_PER_CLASS = 60;
+
+        // Predefined teacher data
+        const teachers = [
+            { name: "Mr. Ahmad", totalClasses: 20, attendedClasses: 18 },
+            { name: "Ms. Aisha", totalClasses: 22, attendedClasses: 20 },
+            { name: "Mr. Zain", totalClasses: 15, attendedClasses: 12 },
+            { name: "Ms. Noor", totalClasses: 18, attendedClasses: 15 },
+        ];
+
+        // Predefined payment history data
+        const paymentHistory = [
+            { date: '2024-11-01', teacherName: 'Mr. Ahmad', amount: 1080, status: 'Completed' },
+            { date: '2024-11-10', teacherName: 'Ms. Aisha', amount: 1200, status: 'Pending' },
+            { date: '2024-11-15', teacherName: 'Mr. Zain', amount: 720, status: 'Completed' },
+        ];
+
+        // Insert data into the payroll table
+        const payrollTableBody = document.getElementById("payroll-table-body");
+
+        teachers.forEach((teacher, index) => {
+            const totalPay = teacher.attendedClasses * PAY_PER_CLASS;
+
+            const newRow = document.createElement("tr");
+
+            newRow.innerHTML = `
+                <td>${teacher.name}</td>
+                <td>${teacher.totalClasses}</td>
+                <td>${teacher.attendedClasses}</td>
+                <td class="total-pay">${totalPay} RM</td>
+                <td><button class="clear-btn" onclick="clearPayment(${index}, '${teacher.name}', ${totalPay})">Clear Payment</button></td>
+            `;
+
+            payrollTableBody.appendChild(newRow);
+        });
+
+        // Insert data into the payment history table
+        const paymentHistoryTableBody = document.getElementById("payment-history-table");
+
+        function updatePaymentHistory(date, teacherName, amount, status) {
+            const newRow = document.createElement("tr");
+            newRow.innerHTML = `
+                <td>${date}</td>
+                <td>${teacherName}</td>
+                <td>${amount} RM</td>
+                <td>${status}</td>
+            `;
+            paymentHistoryTableBody.appendChild(newRow);
+        }
+
+        // Clear Payment Function
+        function clearPayment(index, teacherName, totalPay) {
+            const totalPayCells = document.querySelectorAll(".total-pay");
+            totalPayCells[index].textContent = "0 RM";
+
+            // Add to payment history
+            const currentDate = new Date().toLocaleDateString();
+            updatePaymentHistory(currentDate, teacherName, totalPay, 'Cleared');
+        }
+    </script>
+</body>
+</html>

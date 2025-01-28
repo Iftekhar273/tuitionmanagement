@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Login & Registration</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Firebase Scripts -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f9fdf9;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        .tab-content {
+            margin-top: 1rem;
+        }
+        .btn-primary {
+            background: #2d6a4f;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-primary:hover {
+            background: #52b788;
+        }
+        .form-control {
+            border: 1px solid #2d6a4f;
+            border-radius: 8px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <ul class="nav nav-tabs" id="loginRegisterTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">Login</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">Register</button>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <!-- Login Tab -->
+            <div class="tab-pane fade show active" id="login" role="tabpanel">
+                <h3 class="text-center mt-3">Parent Login</h3>
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="username" placeholder="Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="password" placeholder="IC Number" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </div>
+
+            <!-- Register Tab -->
+            <div class="tab-pane fade" id="register" role="tabpanel">
+                <h3 class="text-center mt-3">Parent Registration</h3>
+                <form id="registrationForm">
+                    <div class="mb-3">
+                        <label for="parentName" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="parentName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="parentEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentPhone" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="parentPhone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentIC" class="form-label">IC Number</label>
+                        <input type="text" class="form-control" id="parentIC" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentChildName" class="form-label">Child Name</label>
+                        <input type="text" class="form-control" id="parentChildName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="parentMatrix" class="form-label">Child Matrix Number</label>
+                        <input type="text" class="form-control" id="parentMatrix" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebaseapp.com",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const q = query(
+                    collection(db, "parentRegistrations"),
+                    where("name", "==", username),
+                    where("ic_number", "==", password)
+                );
+
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    alert('Login successful!');
+                    window.location.href = "Parent payment.html";
+                } else {
+                    alert('Invalid credentials. Please try again.');
+                }
+            } catch (error) {
+                console.error("Error during login: ", error);
+                alert('An error occurred. Please try again later.');
+            }
+        });
+
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                name: document.getElementById('parentName').value,
+                email: document.getElementById('parentEmail').value,
+                phone_number: document.getElementById('parentPhone').value,
+                ic_number: document.getElementById('parentIC').value,
+                child_name: document.getElementById('parentChildName').value,
+                child_matrix: document.getElementById('parentMatrix').value,
+            };
+
+            try {
+                await addDoc(collection(db, "parentRegistrations"), formData);
+                alert('Registration successful!');
+                document.getElementById('registrationForm').reset();
+            } catch (error) {
+                console.error("Error during registration: ", error);
+                alert('An error occurred. Please try again later.');
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

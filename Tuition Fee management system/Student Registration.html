@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            background-color: #e8f9e8; /* Light green background */
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        h2 {
+            color: #28a745; /* Green color for the title */
+            font-weight: bold;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4CAF50; /* Darker green for form labels */
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #28a745; /* Green border for form fields */
+        }
+        .btn-primary {
+            background-color: #28a745; /* Green background for button */
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+        .mb-3 {
+            margin-bottom: 25px;
+        }
+        .checkbox-label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="text-center">Student Registration</h2>
+        <form id="registrationForm">
+            <input type="hidden" name="stakeholder_type" value="student">
+            <div class="mb-3">
+                <label for="studentName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="studentName" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="studentEmail" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentPhone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="studentPhone" name="phone_number" required>
+            </div>
+            <div class="mb-3">
+                <label for="studentMatric" class="form-label">Matric Number</label>
+                <input type="text" class="form-control" id="studentMatric" name="matric_number" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Subjects</label>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectEconomy5" name="subjects" value="F5 Economy">
+                    <label for="subjectEconomy5">F5 Economy</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectEconomy4" name="subjects" value="F4 Economy">
+                    <label for="subjectEconomy4">F4 Economy</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectPhysics5" name="subjects" value="F5 Physics">
+                    <label for="subjectPhysics5">F5 Physics</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectPhysics4" name="subjects" value="F4 Physics">
+                    <label for="subjectPhysics4">F4 Physics</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectMaths5" name="subjects" value="F5 Maths">
+                    <label for="subjectMaths5">F5 Maths</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectMaths4" name="subjects" value="F4 Maths">
+                    <label for="subjectMaths4">F4 Maths</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectScience5" name="subjects" value="F5 Science">
+                    <label for="subjectScience5">F5 Science</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectScience4" name="subjects" value="F4 Science">
+                    <label for="subjectScience4">F4 Science</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectPrinsipAkaun5" name="subjects" value="F5 Prinsip Akaun">
+                    <label for="subjectPrinsipAkaun5">F5 Prinsip Akaun</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectPrinsipAkaun4" name="subjects" value="F4 Prinsip Akaun">
+                    <label for="subjectPrinsipAkaun4">F4 Prinsip Akaun</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectEnglish5" name="subjects" value="F5 English">
+                    <label for="subjectEnglish5">F5 English</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectEnglish4" name="subjects" value="F4 English">
+                    <label for="subjectEnglish4">F4 English</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectAddMath5" name="subjects" value="F5 Add Math">
+                    <label for="subjectAddMath5">F5 Add Math</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectAddMath4" name="subjects" value="F4 Add Math">
+                    <label for="subjectAddMath4">F4 Add Math</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectMath3" name="subjects" value="F3 Math">
+                    <label for="subjectMath3">F3 Math</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectAddMathSMIH5" name="subjects" value="F5 Add Math SMIH">
+                    <label for="subjectAddMathSMIH5">F5 Add Math SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectAddMathSMIH4" name="subjects" value="F4 Add Math SMIH">
+                    <label for="subjectAddMathSMIH4">F4 Add Math SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectBArabSMIH5" name="subjects" value="F5 B Arab SMIH">
+                    <label for="subjectBArabSMIH5">F5 B Arab SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectBArabSMIH4" name="subjects" value="F4 B Arab SMIH">
+                    <label for="subjectBArabSMIH4">F4 B Arab SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectBArabSMIH3" name="subjects" value="F3 B Arab SMIH">
+                    <label for="subjectBArabSMIH3">F3 B Arab SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectScienceSMIH3" name="subjects" value="F3 Science SMIH">
+                    <label for="subjectScienceSMIH3">F3 Science SMIH</label>
+                </div>
+                <div class="checkbox-label">
+                    <input type="checkbox" id="subjectMathSMIH3" name="subjects" value="F3 Math SMIH">
+                    <label for="subjectMathSMIH3">F3 Math SMIH</label>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="studentClass" class="form-label">Class</label>
+                <input type="text" class="form-control" id="studentClass" name="class" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked'))
+                .map(option => option.value);
+
+            const formData = {
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                phone_number: document.getElementById('studentPhone').value,
+                matric_number: document.getElementById('studentMatric').value,
+                subjects: selectedSubjects,
+                class: document.getElementById('studentClass').value
+            };
+
+            try {
+                // Add document to Firestore collection
+                await addDoc(collection(db, "studentRegistrations"), formData);
+                alert('Registration successful!');
+                document.getElementById('registrationForm').reset(); // Reset form after successful registration
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert('Registration failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

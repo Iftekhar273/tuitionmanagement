@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent-Payment</title>
+    <style>
+        /* CSS as provided earlier */
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2ecc71;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidebar p {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: normal;
+            color: #ecf0f1;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 25px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #27ae60;
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2ecc71;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .fees-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .fees-section div {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1e8d4c;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Receipt Upload Section */
+        .upload-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .upload-section input[type="file"] {
+            padding: 8px 12px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .upload-section p {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .container {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                position: absolute;
+                width: 100%;
+                padding: 10px;
+            }
+
+            .container {
+                margin: 20px auto;
+                width: 95%;
+            }
+
+            .btn {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+
+    </style>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Parent</h2>
+        <p id="parentSidebarName" style="text-align: center; font-size: 18px;"></p>
+        <ul>
+            <li><a href="Parent payment.html">Home</a></li>
+            <li><a href="Parent view attendance.html">View Attendance</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Fees Payment</h1>
+
+        <!-- Welcome message -->
+        <p id="welcomeMessage" style="font-size: 18px; color: #333;">Welcome, <span id="parentName"></span>!</p>
+
+        <!-- Fees Section -->
+        <div class="fees-section">
+            <div id="batchInfo">Total Batches Attended: 0</div>
+            <div id="totalFees">Total Fees: 0 RM</div>
+        </div>
+
+        <!-- Receipt Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <label for="receiptUpload">Upload Payment Receipt:</label><br>
+            <input type="file" id="receiptUpload" accept="image/*,application/pdf" onchange="handleFileUpload()"><br>
+            <p id="fileName" style="color: #333;"></p>
+        </div>
+
+        <!-- Pay Now Button -->
+        <div class="btn-container">
+            <button class="btn" id="payNowBtn" onclick="payFees()" disabled>Pay Now</button>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration (replace with your actual config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebaseapp.com",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Simulated logged-in parent ID (this should come from your authentication system)
+        const loggedInParentId = "parent1"; // Example parent ID
+
+        // Fetch parent's name from Firebase
+        function fetchParentName() {
+            const parentNameRef = firebase.database().ref(`parents/${loggedInParentId}/name`);
+            parentNameRef.on("value", (snapshot) => {
+                const parentName = snapshot.val();
+                if (parentName) {
+                    // Update sidebar and welcome message
+                    document.getElementById("parentSidebarName").textContent = `Hello, ${parentName}`;
+                    document.getElementById("parentName").textContent = parentName;
+                }
+            });
+        }
+
+        // Sample attendance data and functions as provided earlier
+        const attendanceData = {
+            john: [
+                { date: '2024-11-01', status: 'Present' },
+                { date: '2024-11-02', status: 'Absent' },
+                { date: '2024-11-03', status: 'Present' },
+                { date: '2024-11-04', status: 'Present' },
+                { date: '2024-11-05', status: 'Absent' },
+                { date: '2024-11-06', status: 'Present' }
+            ],
+            jane: [
+                { date: '2024-11-01', status: 'Absent' },
+                { date: '2024-11-02', status: 'Present' },
+                { date: '2024-11-03', status: 'Present' },
+                { date: '2024-11-04', status: 'Absent' },
+                { date: '2024-11-05', status: 'Present' }
+            ]
+        };
+
+        const feePerBatch = 100;
+
+        function calculateFees() {
+            const student = "john"; // Example mapping for parent1
+            const attendance = attendanceData[student];
+            const batches = Math.floor(attendance.length / 4);
+            const totalFees = batches * feePerBatch;
+
+            document.getElementById('batchInfo').textContent = `Total Batches Attended: ${batches}`;
+            document.getElementById('totalFees').textContent = `Total Fees: ${totalFees} RM`;
+        }
+
+        function handleFileUpload() {
+            const fileInput = document.getElementById('receiptUpload');
+            const fileName = fileInput.files[0]?.name;
+            const payNowBtn = document.getElementById('payNowBtn');
+
+            if (fileName) {
+                document.getElementById('fileName').textContent = `Uploaded Receipt: ${fileName}`;
+                payNowBtn.disabled = false;
+            } else {
+                payNowBtn.disabled = true;
+            }
+        }
+
+        function payFees() {
+            alert('Payment Successful! Thank you for your payment.');
+        }
+
+        // Render the page
+        function renderPage() {
+            fetchParentName();
+            calculateFees();
+        }
+
+        renderPage();
+    </script>
+</body>
+</html>

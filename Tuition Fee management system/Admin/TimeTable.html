@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition Fee Management - Admin Timetable</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #28a745, #ffffff); /* Green to white gradient */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #28a745;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #28a745;
+        }
+
+        table th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        .btn {
+            background-color: #28a745;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #218838;
+        }
+
+        .table-container {
+            margin-top: 40px;
+        }
+
+        .form-control {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-label {
+            font-size: 14px;
+            color: #28a745;
+            font-weight: bold;
+            margin: 10px 0 5px;
+            display: block;
+        }
+
+        .add-subject-form {
+            margin-bottom: 20px;
+        }
+
+        .year-header {
+            font-size: 18px;
+            color: #28a745;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .feedback {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: white;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .save-btn {
+            background-color: #17a2b8;
+            color: white;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .save-btn:hover {
+            background-color: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Timetable Edit</h1>
+
+        <!-- Year Display -->
+        <div class="year-header">
+            Current Year: <span id="currentYear"></span>
+        </div>
+
+        <!-- Add New Subject Form -->
+        <div class="add-subject-form">
+            <h4>Add New Subject</h4>
+            <form id="addSubjectForm">
+                <select id="dayInput" class="form-control" required>
+                    <option value="" disabled selected>Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+
+                <label for="startTimeInput" class="form-label">Start Time</label>
+                <input type="time" id="startTimeInput" class="form-control" placeholder="Start Time" required>
+
+                <label for="endTimeInput" class="form-label">End Time</label>
+                <input type="time" id="endTimeInput" class="form-control" placeholder="End Time" required>
+
+                <input type="text" id="subjectInput" class="form-control" placeholder="Subject Name" required>
+                <input type="text" id="instructorInput" class="form-control" placeholder="Instructor Name" required>
+                <input type="text" id="venueInput" class="form-control" placeholder="Venue" required>
+
+                <button type="submit" class="btn">Add Subject</button>
+            </form>
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <div class="table-container">
+            <table id="timetable-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Subject</th>
+                        <th>Instructor</th>
+                        <th>Venue</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Dynamically filled rows from Firestore -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.appspot.com",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const timetableCollection = collection(db, "timetable");
+
+        const currentYear = new Date().getFullYear();
+        document.getElementById("currentYear").innerText = currentYear;
+
+        async function fetchTimetable() {
+            const querySnapshot = await getDocs(timetableCollection);
+            const tableBody = document.getElementById("table-body");
+            tableBody.innerHTML = "";
+
+            // Days of the week in correct order
+            const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+            const timetable = {};
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (!timetable[data.day]) {
+                    timetable[data.day] = [];
+                }
+                timetable[data.day].push({ ...data, id: doc.id });
+            });
+
+            // Sort and display rows in the correct order
+            daysOfWeek.forEach((day) => {
+                if (timetable[day]) {
+                    timetable[day].forEach((subject) => {
+                        const row = document.createElement("tr");
+                        row.setAttribute("data-id", subject.id);
+
+                        row.innerHTML = `
+                            <td>${subject.day}</td>
+                            <td>${subject.startTime}</td>
+                            <td>${subject.endTime}</td>
+                            <td>${subject.subject}</td>
+                            <td>${subject.instructor}</td>
+                            <td>${subject.venue}</td>
+                            <td>
+                                <button class="btn btn-warning edit-btn">Edit</button>
+                                <button class="btn btn-danger delete-btn">Delete</button>
+                                <button class="btn btn-info save-btn" style="display:none;">Save</button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+            });
+        }
+
+        // Handle Add Subject Form
+        document.getElementById("addSubjectForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const day = document.getElementById("dayInput").value;
+            const startTime = document.getElementById("startTimeInput").value;
+            const endTime = document.getElementById("endTimeInput").value;
+            const subject = document.getElementById("subjectInput").value;
+            const instructor = document.getElementById("instructorInput").value;
+            const venue = document.getElementById("venueInput").value;
+
+            const newSubject = {
+                day,
+                startTime,
+                endTime,
+                subject,
+                instructor,
+                venue
+            };
+
+            try {
+                await addDoc(timetableCollection, newSubject);
+                document.getElementById("feedback").innerText = "Subject added successfully!";
+                fetchTimetable();
+
+                // Reset the form fields
+                document.getElementById("addSubjectForm").reset();
+            } catch (error) {
+                document.getElementById("feedback").innerText = "Error adding subject.";
+            }
+        });
+
+        // Handle Edit and Save Button
+        document.getElementById("table-body").addEventListener("click", (e) => {
+            const row = e.target.closest("tr");
+            const rowId = row.getAttribute("data-id");
+            const saveBtn = row.querySelector(".save-btn");
+            const editBtn = row.querySelector(".edit-btn");
+
+            // Handle Edit Button
+            if (e.target.classList.contains("edit-btn")) {
+                // Enable editing
+                row.querySelectorAll("td").forEach((cell, index) => {
+                    if (index < 6) {
+                        cell.contentEditable = true;
+                    }
+                });
+                editBtn.style.display = "none";
+                saveBtn.style.display = "inline-block";
+            }
+
+            // Handle Save Button
+            if (e.target.classList.contains("save-btn")) {
+                // Disable editing and save the data
+                const updatedData = {
+                    day: row.cells[0].innerText,
+                    startTime: row.cells[1].innerText,
+                    endTime: row.cells[2].innerText,
+                    subject: row.cells[3].innerText,
+                    instructor: row.cells[4].innerText,
+                    venue: row.cells[5].innerText
+                };
+
+                const docRef = doc(db, "timetable", rowId);
+                updateDoc(docRef, updatedData).then(() => {
+                    alert("Changes saved successfully!");
+                    fetchTimetable();
+                }).catch((error) => {
+                    alert("Error saving changes.");
+                });
+
+                row.querySelectorAll("td").forEach((cell) => {
+                    cell.contentEditable = false;
+                });
+
+                saveBtn.style.display = "none";
+                editBtn.style.display = "inline-block";
+            }
+
+            // Handle Delete Button
+            if (e.target.classList.contains("delete-btn")) {
+                const docRef = doc(db, "timetable", rowId);
+                deleteDoc(docRef).then(() => {
+                    fetchTimetable();
+                }).catch((error) => {
+                    alert("Error deleting record.");
+                });
+            }
+        });
+
+        fetchTimetable();
+    </script>
+</body>
+</html>

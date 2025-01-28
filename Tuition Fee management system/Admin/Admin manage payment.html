@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Payment Management</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2ecc71; /* Green background */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            letter-spacing: 1.5px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 25px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: background 0.3s ease, padding-left 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #27ae60; /* Darker green on hover */
+            padding-left: 30px; /* Add slight left padding for hover effect */
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 30px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        input[type="number"], input[type="file"] {
+            padding: 5px;
+            width: 150px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 20px auto;
+            display: block;
+            background-color: #27ae60;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1e8d4c;
+        }
+
+        .receipt-link {
+            margin-top: 5px;
+            color: #2980b9;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .container {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            table th, table td {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                position: absolute;
+                width: 100%;
+                height: auto;
+                padding: 10px;
+            }
+
+            .container {
+                margin: 20px auto;
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+
+            button {
+                font-size: 14px;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Dashboard</h2>
+        <ul>
+            <li><a href="Admin dashboard.html">Register Student</a></li>
+            <li><a href="Admin(Register teacher).html">Register Teacher</a></li>
+            <li><a href="TimeTable.html">Time Table</a></li>
+            <li><a href="Admin manage payment.html">Manage Payment</a></li>
+            <li><a href="Admin(Manage Attendance).html">Manage Attendance</a></li>
+            <li><a href="Admin managepayroll.html">Manage Payroll</a></li>
+            <li><a href="Admin financial report.html">Financial Report</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Student Payment Management</h1>
+        <h2>Payment per Batch (4 Classes): 100 RM</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Classes Attended</th>
+                    <th>Amount Due (RM)</th>
+                    <th>View Receipt</th>
+                </tr>
+            </thead>
+            <tbody id="students"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const batchFee = 100; // Cost per batch
+        const classesPerBatch = 4; // Number of classes in one batch
+
+        const students = [
+            { id: 1, name: 'Iftekhar', attendedClasses: 8, amountDue: 200, receipt: '' },
+            { id: 2, name: 'Tamjid', attendedClasses: 6, amountDue: 400, receipt: '' },
+            { id: 3, name: 'Talha', attendedClasses: 10, amountDue: 0, receipt: '' },
+            { id: 4, name: 'Bishal', attendedClasses: 5, amountDue: 500, receipt: '' }
+        ];
+
+        function renderStudentList() {
+            const studentList = document.getElementById('students');
+            studentList.innerHTML = '';
+
+            students.forEach(student => {
+                const row = `
+                    <tr>
+                        <td>${student.name}</td>
+                        <td>${student.attendedClasses}</td>
+                        <td>${student.amountDue}</td>
+                        <td>
+                            <!-- Admin can only view the receipt link -->
+                            ${student.receipt ? `<a href="${student.receipt}" target="_blank" class="receipt-link">View Receipt</a>` : 'No receipt uploaded'}
+                        </td>
+                    </tr>
+                `;
+                studentList.innerHTML += row;
+            });
+        }
+
+        renderStudentList();
+    </script>
+</body>
+</html>

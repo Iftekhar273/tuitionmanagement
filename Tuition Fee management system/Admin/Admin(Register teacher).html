@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Teacher</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            color: #2c3e50;
+        }
+
+        .dashboard {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: #27ae60; /* Green Background */
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 22px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px 15px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #16a085; /* Darker Green */
+        }
+
+        /* Content Area */
+        .content {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background-color: #ecf0f1;
+        }
+
+        .content section {
+            margin-bottom: 40px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .content section h3 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #27ae60;
+            text-align: center;
+        }
+
+        /* Form and Button Styling */
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        form input, form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        form button {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        form button:hover {
+            background-color: #2ecc71; /* Lighter Green */
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        table thead {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        table thead th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #ddd;
+        }
+
+        table tbody tr {
+            transition: background 0.3s ease;
+        }
+
+        table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table tbody td button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        table tbody td button:hover {
+            background-color: #c0392b; /* Darker Red */
+        }
+
+        /* Remove Button Styling */
+        .remove-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="Admin dashboard.html">Register Student</a></li>
+                <li><a href="Admin(Register teacher).html">Register Teacher</a></li>
+                <li><a href="TimeTable.html">Time Table</a></li>
+                <li><a href="Admin manage payment.html">Manage Payment</a></li>
+                <li><a href="Admin(Manage Attendance).html">Manage Attendance</a></li>
+                <li><a href="Admin managepayroll.html">Manage Payroll</a></li>
+                <li><a href="Admin financial report.html">Financial Report</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <section id="register-teacher">
+                <h3>Register Teacher</h3>
+                <form id="register-form">
+                    <label for="teacher-name">Name:</label>
+                    <input type="text" id="teacher-name" name="teacher-name" placeholder="Enter teacher's name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter email" required>
+                    
+                    <label for="phone">Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter phone number" required>
+                    
+                    <label for="ic-number">IC Number:</label>
+                    <input type="text" id="ic-number" name="ic-number" placeholder="Enter IC number" required>
+                    
+                    <label for="type">Type:</label>
+                    <select id="type" name="type" required>
+                        <option value="internal">Internal</option>
+                        <option value="external">External</option>
+                    </select>
+                    
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" placeholder="Enter subject specialization" required>
+                    
+                    <button type="submit">Register</button>
+                </form>
+            </section>
+
+            <section id="view-teachers">
+                <h3>View Teachers</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>IC Number</th>
+                            <th>Type</th>
+                            <th>Subject</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-table-body">
+                        <!-- Teacher rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Handle teacher registration form submission
+        document.getElementById('register-form').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Prevent default form submission
+        
+            // Get the form data
+            const teacherName = document.getElementById('teacher-name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const icNumber = document.getElementById('ic-number').value;
+            const type = document.getElementById('type').value;
+            const subject = document.getElementById('subject').value;
+        
+            // Add new teacher to Firestore
+            try {
+                const docRef = await addDoc(collection(db, "teachers"), {
+                    name: teacherName,
+                    email: email,
+                    phone: phone,
+                    ic_number: icNumber,
+                    type: type,
+                    subject: subject
+                });
+                console.log("Document written with ID: ", docRef.id);
+                
+                // Clear form fields after successful submission
+                document.getElementById('register-form').reset();
+                
+                // Refresh the teacher list
+                fetchTeachers();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+            }
+        });
+        
+        // Function to add teacher data to the table dynamically
+        function addTeacherToTable(teacherData, teacherId) {
+            const tableBody = document.getElementById('teacher-table-body');
+            const newRow = document.createElement('tr');
+
+            // Create new table cells
+            const nameCell = document.createElement('td');
+            nameCell.textContent = teacherData.name;
+
+            const emailCell = document.createElement('td');
+            emailCell.textContent = teacherData.email;
+
+            const phoneCell = document.createElement('td');
+            phoneCell.textContent = teacherData.phone || 'Not available';  // Default text if phone is missing
+
+            const icCell = document.createElement('td');
+            icCell.textContent = teacherData.ic_number;
+
+            const typeCell = document.createElement('td');
+            typeCell.textContent = teacherData.type;
+
+            const subjectCell = document.createElement('td');
+            subjectCell.textContent = teacherData.subject;
+
+            const actionCell = document.createElement('td');
+            const removeButton = document.createElement('button');
+            removeButton.textContent = 'Remove';
+            removeButton.classList.add('remove-btn');
+
+            // Add delete functionality
+            removeButton.addEventListener('click', async function () {
+                // Remove from Firestore
+                try {
+                    await deleteDoc(doc(db, "teachers", teacherId));
+                    alert('Teacher removed successfully!');
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    alert('Failed to remove teacher from database.');
+                }
+
+                // Remove from table
+                newRow.remove();
+            });
+            actionCell.appendChild(removeButton);
+
+            // Append the cells to the new row
+            newRow.appendChild(nameCell);
+            newRow.appendChild(emailCell);
+            newRow.appendChild(phoneCell);
+            newRow.appendChild(icCell);
+            newRow.appendChild(typeCell);
+            newRow.appendChild(subjectCell);
+            newRow.appendChild(actionCell);
+
+            // Append the row to the table
+            tableBody.appendChild(newRow);
+        }
+
+        
+        // Function to fetch teachers from Firestore and display them in the table
+        async function fetchTeachers() {
+            const teachersCollection = collection(db, "teachers");
+            const teachersSnapshot = await getDocs(teachersCollection);
+            
+            // Clear the table before adding new rows
+            document.getElementById('teacher-table-body').innerHTML = '';
+        
+            teachersSnapshot.forEach(doc => {
+                const teacherData = doc.data();
+                const teacherId = doc.id;  // Get the document ID
+                addTeacherToTable(teacherData, teacherId);  // Pass the teacherId to be used for deletion
+            });
+        }
+        
+        // Fetch the list of teachers when the page loads
+        window.onload = fetchTeachers;
+    </script>
+</body>
+</html>

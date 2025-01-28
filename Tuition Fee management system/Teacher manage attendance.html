@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Attendance</title>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <style>
+        /* Basic Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2ecc71;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 25px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #27ae60;
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2ecc71;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .attendance-date {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            margin: 20px auto;
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1e8d4c;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        /* Popup Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content button {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .modal-content button:hover {
+            background-color: #1e8d4c;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Teacher</h2>
+        <ul>
+            <li><a href="#">Results</a></li>
+            <li><a href="#">Attendance</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Take Attendance</h1>
+
+        <!-- Attendance Date -->
+        <div class="attendance-date" id="attendanceDate">
+            Attendance Date: <!-- Set dynamically -->
+        </div>
+
+        <!-- Dropdown to select subject -->
+        <label for="subjectDropdown" style="font-size: 18px; color: #333;">Select Subject:</label>
+        <select id="subjectDropdown" onchange="updateStudentList()">
+            <option value="">--Select Subject--</option>
+            <option value="F5 Economy">F5 Economy</option>
+            <option value="F4 Economy">F4 Economy</option>
+            <option value="F5 Physics">F5 Physics</option>
+        </select>
+
+        <!-- Buttons to Start and End Class -->
+        <div class="btn-container">
+            <button id="startClassBtn" class="btn" onclick="startClass()">Start Class</button>
+            <button id="endClassBtn" class="btn" onclick="endClass()" disabled>End Class</button>
+        </div>
+
+        <!-- Table for student list -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Attend</th>
+                    <th>Absent</th>
+                </tr>
+            </thead>
+            <tbody id="studentList">
+                <!-- Student list will be populated dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for Success / Error Messages -->
+    <div id="attendanceModal" class="modal">
+        <div class="modal-content">
+            <p id="modalMessage"></p>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.appspot.com",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Set the current date
+        document.getElementById('attendanceDate').innerHTML = `Attendance Date: ${new Date().toLocaleDateString()}`;
+
+        // Update student list based on selected subject
+        async function updateStudentList() {
+            const subject = document.getElementById('subjectDropdown').value;
+            if (!subject) return;
+
+            try {
+                const snapshot = await db.collection('studentRegistrations')
+                    .where('subjects', 'array-contains', subject)
+                    .get();
+
+                const studentList = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    name: doc.data().name,
+                    matric_number: doc.data().matric_number
+                }));
+
+                const studentListContainer = document.getElementById('studentList');
+                studentListContainer.innerHTML = ''; // Clear existing list
+
+                if (studentList.length === 0) {
+                    studentListContainer.innerHTML = '<tr><td colspan="3">No students found for the selected subject.</td></tr>';
+                } else {
+                    studentList.forEach(student => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${student.name}</td>
+                            <td><input type="checkbox" data-student-id="${student.id}" data-matric_number="${student.matric_number}" class="attendanceCheckbox" disabled></td>
+                            <td><input type="checkbox" class="absentCheckbox" data-student-id="${student.id}" disabled></td>
+                        `;
+                        studentListContainer.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+
+        // Start class functionality
+        function startClass() {
+            document.getElementById('startClassBtn').disabled = true;
+            document.getElementById('endClassBtn').disabled = false;
+
+            // Enable checkboxes for attendance
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.disabled = false;
+            });
+        }
+
+        // End class functionality
+        function endClass() {
+            document.getElementById('endClassBtn').disabled = true;
+            document.getElementById('startClassBtn').disabled = false;
+
+            // Disable checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.disabled = true;
+            });
+
+            // Automatically save attendance when class ends
+            saveAttendance();
+        }
+
+        // Save attendance function
+        async function saveAttendance() {
+            const checkboxes = document.querySelectorAll('.attendanceCheckbox');
+            const subject = document.getElementById('subjectDropdown').value;
+            const date = new Date().toLocaleDateString();
+
+            if (!subject) {
+                alert("Please select a subject first.");
+                return;
+            }
+
+            let allSelected = true;
+
+            checkboxes.forEach((checkbox) => {
+                const absentCheckbox = checkbox.closest('tr').querySelector('.absentCheckbox');
+                if (!checkbox.checked && !absentCheckbox.checked) {
+                    allSelected = false;
+                }
+            });
+
+            if (!allSelected) {
+                showModal("Please select 'Present' or 'Absent' for all students.");
+                return;
+            }
+
+            checkboxes.forEach(async (checkbox) => {
+                const studentId = checkbox.dataset.studentId;
+                const matric_number = checkbox.dataset.matric_number;
+                const isAbsent = checkbox.closest('tr').querySelector('.absentCheckbox').checked;
+                const attended = !isAbsent;
+
+                if (!matric_number) {
+                    console.error(`Matric number is missing for student: ${studentId}`);
+                    return; // Skip saving this attendance entry
+                }
+
+                try {
+                    await db.collection('attendance').doc(date)  // Use the date as document ID
+                        .collection('subjects').doc(subject)  // Use the subject as document ID
+                        .collection('records').add({  // Store attendance records
+                            studentId: studentId,
+                            name: checkbox.closest('tr').children[0].textContent,
+                            matric_number: matric_number,
+                            attended: attended,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        });
+
+                    console.log('Attendance saved for', studentId);
+                } catch (error) {
+                    console.error('Error saving attendance:', error);
+                }
+            });
+
+            showModal("Attendance saved successfully.");
+        }
+
+        // Show Modal with message
+        function showModal(message) {
+            document.getElementById('modalMessage').innerText = message;
+            document.getElementById('attendanceModal').style.display = 'block';
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('attendanceModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

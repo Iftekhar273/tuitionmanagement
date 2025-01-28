@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f9fdf9; /* Light greenish white */
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .logo {
+            max-width: 120px;
+            margin-bottom: 1rem;
+        }
+        .login-container h1 {
+            color: #2d6a4f; /* Dark Green */
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        .login-container p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+        .form-control {
+            border: 1px solid #2d6a4f;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .btn-login {
+            background: #2d6a4f;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            width: 100%;
+            margin-top: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-login:hover {
+            background: #52b788; /* Bright Green */
+        }
+        .forgot-link {
+            display: block;
+            margin-top: 1rem;
+            color: #2d6a4f;
+            text-decoration: none;
+        }
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- Logo -->
+        <img src="images/logo.jpg" alt="School Logo" class="logo">
+        <h1>Teacher Login</h1>
+        <p>Please log in to access your account</p>
+        <form id="login-form">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="username" placeholder="Username" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+        <a href="forgot-password.html" class="forgot-link">Forgot Password?</a>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Handle form submission
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Query the 'teachers' collection to find the matching teacher's username and password (IC)
+            const teachersRef = collection(db, "teachers");
+            const q = query(teachersRef, where("name", "==", username), where("ic_number", "==", password));
+
+            try {
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    alert("Invalid username or password.");
+                } else {
+                    // Teacher found, redirect to the dashboard
+                    window.location.href = "Teacher results.html";
+                }
+            } catch (error) {
+                console.error("Error logging in: ", error);
+                alert("Error logging in. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

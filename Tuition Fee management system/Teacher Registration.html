@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Registration</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #28a745, #ffffff); /* Green to white gradient */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .card {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 12px;
+            padding: 2rem;
+            background-color: white;
+            width: 100%;
+            max-width: 600px;
+        }
+        .card h2 {
+            font-weight: 700;
+            color: #28a745; /* Green color for the title */
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+        }
+        .btn-primary {
+            background-color: #28a745; /* Green background for Register button */
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+        .form-label {
+            color: #333;
+        }
+        .form-control {
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .form-select {
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .mb-3 {
+            margin-bottom: 1.5rem;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            transition: all 0.2s ease-in-out;
+        }
+        #teacherInfo {
+            margin-top: 2rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="card">
+            <h2 class="text-center">Teacher Registration</h2>
+            <form id="teacherForm">
+                <input type="hidden" name="stakeholder_type" value="teacher">
+                <div class="mb-3">
+                    <label for="teacherName" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="teacherName" name="name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherEmail" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="teacherEmail" name="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherPhone" class="form-label">Phone Number</label>
+                    <input type="text" class="form-control" id="teacherPhone" name="phone_number" required>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherIC" class="form-label">IC Number</label>
+                    <input type="text" class="form-control" id="teacherIC" name="ic_number" required>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherType" class="form-label">Type</label>
+                    <select class="form-select" id="teacherType" name="type" required>
+                        <option value="Internal">Internal</option>
+                        <option value="External">External</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="teacherSubject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="teacherSubject" name="subject" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Section to display the teacher's details after submission -->
+    <div id="teacherInfo">
+        <h3>Registered Teacher Details</h3>
+        <p><strong>Name:</strong> <span id="displayName"></span></p>
+        <p><strong>Email:</strong> <span id="displayEmail"></span></p>
+        <p><strong>Phone Number:</strong> <span id="displayPhone"></span></p>
+        <p><strong>IC Number:</strong> <span id="displayIC"></span></p>
+        <p><strong>Type:</strong> <span id="displayType"></span></p>
+        <p><strong>Subject:</strong> <span id="displaySubject"></span></p>
+    </div>
+
+    <!-- Firebase SDK (Modular) -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Handle form submission
+        document.getElementById('teacherForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent form from submitting the default way
+
+            // Get form data
+            const teacherName = document.getElementById('teacherName').value;
+            const teacherEmail = document.getElementById('teacherEmail').value;
+            const teacherPhone = document.getElementById('teacherPhone').value;
+            const teacherIC = document.getElementById('teacherIC').value;
+            const teacherType = document.getElementById('teacherType').value;
+            const teacherSubject = document.getElementById('teacherSubject').value;
+
+            // Add teacher data to Firestore
+            try {
+                const docRef = await addDoc(collection(db, "teachers"), {
+                    name: teacherName,
+                    email: teacherEmail,
+                    phone_number: teacherPhone,
+                    ic_number: teacherIC,
+                    type: teacherType,
+                    subject: teacherSubject
+                });
+                console.log("Teacher added with ID: ", docRef.id);
+                alert("Teacher registered successfully!");
+
+                // Update the page to show the registered teacher's information
+                document.getElementById('displayName').textContent = teacherName;
+                document.getElementById('displayEmail').textContent = teacherEmail;
+                document.getElementById('displayPhone').textContent = teacherPhone;
+                document.getElementById('displayIC').textContent = teacherIC;
+                document.getElementById('displayType').textContent = teacherType;
+                document.getElementById('displaySubject').textContent = teacherSubject;
+
+                // Show the teacher information section
+                document.getElementById('teacherInfo').style.display = 'block';
+
+                // Reset the form after submission
+                document.getElementById('teacherForm').reset();
+            } catch (error) {
+                console.error("Error adding teacher: ", error);
+                alert("Error registering teacher. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

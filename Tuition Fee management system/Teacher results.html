@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View and Edit Student Exam Results</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2ecc71;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 25px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 12px 20px;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #27ae60;
+        }
+
+        .container {
+            margin-left: 270px;
+            padding: 30px;
+            width: calc(100% - 270px);
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2ecc71;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            margin: 20px auto;
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1e8d4c;
+            transform: scale(1.05);
+        }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .container {
+                margin-left: 220px;
+                width: calc(100% - 220px);
+            }
+        }
+
+        @media (max-width: 576px) {
+            .sidebar {
+                position: absolute;
+                width: 100%;
+                padding: 10px;
+            }
+
+            .container {
+                margin: 20px auto;
+                width: 95%;
+            }
+
+            .btn {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Teacher</h2>
+        <ul>
+            <li><a href="Teacher results.html">Dashboard</a></li>
+            <li><a href="Teacher manage attendance.html">Attendance</a></li>
+            
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>View and Edit Student Exam Results</h1>
+
+        <!-- Dropdown to select subject -->
+        <label for="subjectDropdown" style="font-size: 18px; color: #333;">Select Subject:</label>
+        <select id="subjectDropdown" onchange="updateStudentResults()">
+            <option value="">--Select Subject--</option>
+            <option value="math">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="english">English</option>
+            <option value="history">History</option>
+        </select>
+
+        <!-- Exam Results Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Marks</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable">
+                <!-- Student results will be dynamically populated here -->
+            </tbody>
+        </table>
+
+        <button class="btn" onclick="saveResults()">Save Results</button>
+    </div>
+
+    <script>
+        // Sample data for student exam results
+        const examResults = {
+            math: [
+                { name: 'John Doe', marks: 85 },
+                { name: 'Jane Smith', marks: 92 },
+                { name: 'Sam Brown', marks: 76 }
+            ],
+            science: [
+                { name: 'Lucy White', marks: 88 },
+                { name: 'Michael Green', marks: 74 },
+                { name: 'Sara Black', marks: 67 }
+            ],
+            english: [
+                { name: 'Chris Red', marks: 95 },
+                { name: 'Emma Blue', marks: 89 },
+                { name: 'Tom Purple', marks: 80 }
+            ],
+            history: [
+                { name: 'David Yellow', marks: 90 },
+                { name: 'Anna Grey', marks: 77 },
+                { name: 'James Violet', marks: 65 }
+            ]
+        };
+
+        function renderResults(results) {
+            const resultsTable = document.getElementById('resultsTable');
+            resultsTable.innerHTML = '';
+
+            if (results.length === 0) {
+                resultsTable.innerHTML = '<tr><td colspan="2">No results found for this subject.</td></tr>';
+            } else {
+                results.forEach(student => {
+                    const row = `
+                        <tr>
+                            <td>${student.name}</td>
+                            <td><input type="number" class="marksInput" value="${student.marks}" /></td>
+                        </tr>
+                    `;
+                    resultsTable.innerHTML += row;
+                });
+            }
+        }
+
+        function updateStudentResults() {
+            const subject = document.getElementById('subjectDropdown').value;
+
+            if (subject && examResults[subject]) {
+                renderResults(examResults[subject]);
+            } else {
+                document.getElementById('resultsTable').innerHTML = '';
+            }
+        }
+
+        function saveResults() {
+            const subject = document.getElementById('subjectDropdown').value;
+            if (!subject) {
+                alert("Please select a subject.");
+                return;
+            }
+
+            const results = examResults[subject];
+            const inputs = document.querySelectorAll('.marksInput');
+
+            inputs.forEach((input, index) => {
+                results[index].marks = input.value; // Update marks based on input values
+            });
+
+            alert('Results saved successfully!');
+        }
+    </script>
+</body>
+</html>

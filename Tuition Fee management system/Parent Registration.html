@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            background-color: #e8f9e8;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        h2 {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4CAF50;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #28a745;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+        .btn-secondary, .btn-danger {
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 16px;
+            color: #fff;
+            border: none;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .mb-3 {
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="text-center">Parent Registration</h2>
+        <form id="registrationForm">
+            <input type="hidden" name="stakeholder_type" value="parent">
+            <div class="mb-3">
+                <label for="parentName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="parentName" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="parentEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="parentEmail" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="parentPhone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="parentPhone" name="phone_number" required>
+            </div>
+            <div id="childrenSection">
+                <div class="child-details">
+                    <h5>Child 1</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Child Name</label>
+                        <input type="text" class="form-control" name="child_name[]" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Child Matrix Number</label>
+                        <input type="text" class="form-control" name="child_matrix[]" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-secondary mb-3" id="addChildBtn">Add Another Child</button>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const childrenSection = document.getElementById('childrenSection');
+        const addChildBtn = document.getElementById('addChildBtn');
+
+        addChildBtn.addEventListener('click', () => {
+            const childCount = childrenSection.querySelectorAll('.child-details').length + 1;
+
+            const childHTML = `
+                <div class="child-details">
+                    <h5>Child ${childCount}</h5>
+                    <div class="mb-3">
+                        <label class="form-label">Child Name</label>
+                        <input type="text" class="form-control" name="child_name[]" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Child Matrix Number</label>
+                        <input type="text" class="form-control" name="child_matrix[]" required>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-child-btn">Remove Child</button>
+                </div>
+            `;
+
+            const childElement = document.createElement('div');
+            childElement.innerHTML = childHTML;
+            childrenSection.appendChild(childElement);
+
+            // Add event listener for the "Remove Child" button
+            childElement.querySelector('.remove-child-btn').addEventListener('click', () => {
+                childElement.remove();
+            });
+        });
+
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('parentName').value,
+                email: document.getElementById('parentEmail').value,
+                phone_number: document.getElementById('parentPhone').value,
+                children: []
+            };
+
+            const childNames = document.querySelectorAll('input[name="child_name[]"]');
+            const childMatrices = document.querySelectorAll('input[name="child_matrix[]"]');
+
+            for (let i = 0; i < childNames.length; i++) {
+                formData.children.push({
+                    name: childNames[i].value,
+                    matrix: childMatrices[i].value
+                });
+            }
+
+            try {
+                await addDoc(collection(db, "parentRegistrations"), formData);
+                alert('Registration successful!');
+                document.getElementById('registrationForm').reset();
+                childrenSection.innerHTML = `
+                    <div class="child-details">
+                        <h5>Child 1</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Child Name</label>
+                            <input type="text" class="form-control" name="child_name[]" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Child Matrix Number</label>
+                            <input type="text" class="form-control" name="child_matrix[]" required>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert('Registration failed. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

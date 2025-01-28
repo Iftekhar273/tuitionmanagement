@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition Fee Management - Timetable View</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #28a745, #ffffff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #28a745;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #28a745;
+        }
+
+        table th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        table td {
+            background-color: #f9f9f9;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Timetable for the Year <span id="current-year"></span></h1>
+
+        <!-- Timetable Table -->
+        <div class="table-container">
+            <table id="timetable-table">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Instructor</th>
+                        <th>Venue</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Timetable rows dynamically populated from Firestore -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase Configuration -->
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD82EK0Jgf5AjAbnzLDd0p4bcIVIEChehQ",
+            authDomain: "tuition-fee-management.firebaseapp.com",
+            databaseURL: "https://tuition-fee-management-default-rtdb.firebaseio.com",
+            projectId: "tuition-fee-management",
+            storageBucket: "tuition-fee-management.firebasestorage.app",
+            messagingSenderId: "801226019338",
+            appId: "1:801226019338:web:57b6b012e0d3ef312405f3",
+            measurementId: "G-5HNNR0R0HR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Reference to the timetable collection
+        const timetableCollection = collection(db, "timetable");
+
+        // Function to convert time to 12-hour format (AM/PM)
+        function convertTo12HourFormat(time) {
+            let [hours, minutes] = time.split(':').map(num => parseInt(num, 10));
+            let period = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // The hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${hours}:${minutes} ${period}`;
+        }
+
+        // Fetch timetable data from Firestore and display it
+        async function fetchTimetable() {
+            const querySnapshot = await getDocs(timetableCollection);
+            const tableBody = document.getElementById("table-body");
+            tableBody.innerHTML = ""; // Clear the existing rows
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const row = document.createElement("tr");
+
+                // Convert the start and end times to 12-hour format
+                const startTime = convertTo12HourFormat(data.startTime);
+                const endTime = convertTo12HourFormat(data.endTime);
+                const time = `${startTime} - ${endTime}`;
+
+                row.innerHTML = `
+                    <td>${data.day}</td>
+                    <td>${time}</td>
+                    <td>${data.subject}</td>
+                    <td>${data.instructor}</td>
+                    <td>${data.venue}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize and load timetable data
+        fetchTimetable();
+
+        // Display the current year at the top of the page
+        const currentYear = new Date().getFullYear();
+        document.getElementById("current-year").textContent = currentYear;
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Dashboard Styles */
+.dashboard-container {
+    margin-top: 20px;
+}
+
+.dashboard-container h2 {
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.table th, .table td {
+    text-align: center;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e0e0e0;
+}

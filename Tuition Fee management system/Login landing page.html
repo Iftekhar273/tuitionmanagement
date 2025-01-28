@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Landing Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f9fdf9; /* Light greenish white */
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 3rem auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            max-width: 100px;
+            margin-bottom: 1rem;
+        }
+        .container h1 {
+            color: #2d6a4f; /* Dark Green */
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .container p {
+            color: #6c757d;
+            margin-bottom: 2rem;
+        }
+        .role-card {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 2px solid #2d6a4f; /* Border color */
+            border-radius: 8px;
+            color: #2d6a4f;
+            font-weight: 500;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .role-card:hover {
+            background: #2d6a4f;
+            color: #ffffff;
+        }
+        .role-card i {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+        .btn-register {
+            display: inline-block;
+            background: #52b788; /* Bright Green */
+            color: #ffffff;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-register:hover {
+            background: #2d6a4f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <img src="images/logo.jpg" alt="School Logo" class="logo">
+        <h1>Welcome to the Portal</h1>
+        <p>Please choose your role to log in or register if you're new.</p>
+
+        <!-- Role Cards -->
+        <div class="role-card" onclick="location.href='Admin/Admin login.html'">
+            <i class="fas fa-user-shield"></i> Admin
+        </div>
+        <div class="role-card" onclick="location.href='Teacher login.html'">
+            <i class="fas fa-chalkboard-teacher"></i> Teacher
+        </div>
+        <div class="role-card" onclick="location.href='Student login.html'">
+            <i class="fas fa-user-graduate"></i> Student
+        </div>
+        <div class="role-card" onclick="location.href='Parent login and reg.html'">
+            <i class="fas fa-users"></i> Parent
+        </div>
+
+        
+    </div>
+
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
